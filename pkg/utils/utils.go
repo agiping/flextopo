@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"strconv"
+	"strings"
 )
 
 // Atoi 将字符串转换为整数，包含错误处理
@@ -43,4 +45,45 @@ func (l *SimpleLogger) Warn(msg string) {
 
 func (l *SimpleLogger) Error(msg string) {
 	log.Printf("[ERROR] %s", msg)
+}
+
+// ParseCPUList 解析 CPU 列表字符串，返回 CPU 核心编号的整数切片
+func ParseCPUList(cpuListStr string) ([]int, error) {
+	var cpuCores []int
+	segments := strings.Split(cpuListStr, ",")
+	for _, segment := range segments {
+		segment = strings.TrimSpace(segment)
+		if segment == "" {
+			continue
+		}
+		if strings.Contains(segment, "-") {
+			// 处理范围，例如 "0-3"
+			bounds := strings.Split(segment, "-")
+			if len(bounds) != 2 {
+				return nil, fmt.Errorf("invalid CPU range: %s", segment)
+			}
+			start, err := strconv.Atoi(bounds[0])
+			if err != nil {
+				return nil, fmt.Errorf("invalid CPU number: %s", bounds[0])
+			}
+			end, err := strconv.Atoi(bounds[1])
+			if err != nil {
+				return nil, fmt.Errorf("invalid CPU number: %s", bounds[1])
+			}
+			if start > end {
+				return nil, fmt.Errorf("invalid CPU range: %s", segment)
+			}
+			for i := start; i <= end; i++ {
+				cpuCores = append(cpuCores, i)
+			}
+		} else {
+			// 处理单个数字，例如 "5"
+			cpuNum, err := strconv.Atoi(segment)
+			if err != nil {
+				return nil, fmt.Errorf("invalid CPU number: %s", segment)
+			}
+			cpuCores = append(cpuCores, cpuNum)
+		}
+	}
+	return cpuCores, nil
 }

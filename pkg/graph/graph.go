@@ -4,11 +4,7 @@ import (
 	"flextopo/pkg/crd"
 	"flextopo/pkg/utils"
 	"fmt"
-	"math"
 	"sort"
-
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 // FlexTopoGraph 表示整个拓扑图
@@ -89,82 +85,30 @@ func (g *FlexTopoGraph) AddNode(node *Node) {
 	g.Nodes[node.ID] = node
 }
 
-// UpdateCPUAllocation 更新 CPU 核心的分配状态
-func (g *FlexTopoGraph) UpdateCPUAllocation(pod *corev1.Pod, cpuQuantity *resource.Quantity) {
-	// 计算需要分配的核心数
-	cpuCoresNeeded := int(math.Ceil(float64(cpuQuantity.MilliValue()) / 1000))
-
-	// 查找可用的 Core Group
-	availableCoreGroups := []*Node{}
-	for _, node := range g.Nodes {
-		if node.Type == "CoreGroup" {
-			// 检查 Core Group 是否可用
-			isAvailable := true
-			for _, child := range node.Children {
-				status, ok := child.Attributes["status"].(string)
-				if !ok || status != "free" {
-					isAvailable = false
-					break
-				}
-			}
-			if isAvailable {
-				availableCoreGroups = append(availableCoreGroups, node)
-			}
+// UpdateCPUUsage 更新 CPU Core 节点的使用状态
+func (g *FlexTopoGraph) UpdateCPUUsage(podName string, cpuCores []int) {
+	for _, coreID := range cpuCores {
+		nodeID := fmt.Sprintf("core-%d", coreID)
+		if node, exists := g.Nodes[nodeID]; exists {
+			node.Attributes["status"] = "used"
+			node.Attributes["usedBy"] = podName
 		}
-	}
-
-	// 分配核心
-	coresAllocated := 0
-	for _, coreGroup := range availableCoreGroups {
-		for _, coreNode := range coreGroup.Children {
-			if coresAllocated >= cpuCoresNeeded {
-				break
-			}
-			coreNode.Attributes["status"] = "allocated"
-			coreNode.Attributes["allocatedTo"] = pod.Name
-			coresAllocated++
-		}
-		if coresAllocated >= cpuCoresNeeded {
-			break
-		}
-	}
-
-	if coresAllocated < cpuCoresNeeded {
-		// 资源不足，记录警告或错误
-		// 可以在这里实现资源不足的处理逻辑
 	}
 }
 
-// UpdateGPUAllocation 更新 GPU 的分配状态
-func (g *FlexTopoGraph) UpdateGPUAllocation(pod *corev1.Pod, gpuQuantity *resource.Quantity) {
-	// 计算需要分配的 GPU 数量
-	gpusNeeded := int(gpuQuantity.Value())
-
-	// 查找可用的 GPU 节点
-	availableGPUs := []*Node{}
-	for _, node := range g.Nodes {
-		if node.Type == "GPU" {
-			status, ok := node.Attributes["status"].(string)
-			if ok && status == "free" {
-				availableGPUs = append(availableGPUs, node)
+// UpdateGPUUsage 更新 GPU 节点的使用状态
+func (g *FlexTopoGraph) UpdateGPUUsage(podName string, gpuUUIDs []string) {
+	for _, uuid := range gpuUUIDs {
+		// 找到对应的 GPU 节点
+		for _, node := range g.Nodes {
+			if node.Type == "GPU" {
+				if node.Attributes["uuid"] == uuid {
+					node.Attributes["status"] = "used"
+					node.Attributes["usedBy"] = podName
+					break
+				}
 			}
 		}
-	}
-
-	// 分配 GPU
-	gpusAllocated := 0
-	for _, gpuNode := range availableGPUs {
-		if gpusAllocated >= gpusNeeded {
-			break
-		}
-		gpuNode.Attributes["status"] = "allocated"
-		gpuNode.Attributes["allocatedTo"] = pod.Name
-		gpusAllocated++
-	}
-
-	if gpusAllocated < gpusNeeded {
-		// 资源不足，记录警告或错误
-		// 可以在这里实现资源不足的处理逻辑
 	}
 }
 

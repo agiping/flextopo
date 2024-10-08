@@ -13,6 +13,8 @@ spec:
         app: flextopo-agent
     spec:
       serviceAccountName: flextopo-agent
+      securityContext:
+        privileged: true
       containers:
         - name: flextopo-agent
           image: your-docker-repo/flextopo-agent:latest
