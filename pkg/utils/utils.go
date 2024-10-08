@@ -17,10 +17,10 @@ func Atoi(s string) int {
 
 // CPUInfo 表示单个 CPU 的信息
 type CPUInfo struct {
-	CPUID    int
-	CoreID   int
-	SocketID int
-	NodeID   int
+	CPUID      int
+	CoreID     int
+	SocketID   int
+	NumaNodeID int
 }
 
 // Logger 接口定义了日志方法

@@ -40,10 +40,10 @@ func (hc *HardwareCollector) CollectHardwareInfo() (*graph.FlexTopoGraph, error)
 	}
 
 	// 收集 PCIe 拓扑信息
-	err = hc.collectPCIeInfo(graph)
-	if err != nil {
-		return nil, err
-	}
+	// err = hc.collectPCIeInfo(graph)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return graph, nil
 }
@@ -80,13 +80,13 @@ func parseLSCPUOutput(output string) []utils.CPUInfo {
 		cpuID := utils.Atoi(fields[0])
 		coreID := utils.Atoi(fields[1])
 		socketID := utils.Atoi(fields[2])
-		nodeID := utils.Atoi(fields[3])
+		numaNodeID := utils.Atoi(fields[3])
 
 		cpuInfo := utils.CPUInfo{
-			CPUID:    cpuID,
-			CoreID:   coreID,
-			SocketID: socketID,
-			NodeID:   nodeID,
+			CPUID:      cpuID,
+			CoreID:     coreID,
+			SocketID:   socketID,
+			NumaNodeID: numaNodeID,
 		}
 		cpuInfos = append(cpuInfos, cpuInfo)
 	}
@@ -125,13 +125,13 @@ func (hc *HardwareCollector) collectGPUInfo(graph *graph.FlexTopoGraph) error {
 	return nil
 }
 
-// collectPCIeInfo 收集 PCIe 拓扑信息
-func (hc *HardwareCollector) collectPCIeInfo(graph *graph.FlexTopoGraph) error {
-	hc.logger.Info("Collecting PCIe topology information")
+// // collectPCIeInfo 收集 PCIe 拓扑信息
+// func (hc *HardwareCollector) collectPCIeInfo(graph *graph.FlexTopoGraph) error {
+// 	hc.logger.Info("Collecting PCIe topology information")
 
-	// PCIe 拓扑信息的收集可能比较复杂，视情况而定
-	// 这里可以使用 lspci 命令，或者读取 /sys/bus/pci 目录下的信息
+// 	// PCIe 拓扑信息的收集可能比较复杂，视情况而定
+// 	// 这里可以使用 lspci 命令，或者读取 /sys/bus/pci 目录下的信息
 
-	// 简化处理，暂不实现
-	return nil
-}
+// 	// 简化处理，暂不实现
+// 	return nil
+// }

@@ -35,8 +35,8 @@ func (g *FlexTopoGraph) BuildCPUNodes(cpuInfos []utils.CPUInfo) {
 		if cpuInfos[i].SocketID != cpuInfos[j].SocketID {
 			return cpuInfos[i].SocketID < cpuInfos[j].SocketID
 		}
-		if cpuInfos[i].NodeID != cpuInfos[j].NodeID {
-			return cpuInfos[i].NodeID < cpuInfos[j].NodeID
+		if cpuInfos[i].NumaNodeID != cpuInfos[j].NumaNodeID {
+			return cpuInfos[i].NumaNodeID < cpuInfos[j].NumaNodeID
 		}
 		return cpuInfos[i].CoreID < cpuInfos[j].CoreID
 	})
@@ -44,20 +44,20 @@ func (g *FlexTopoGraph) BuildCPUNodes(cpuInfos []utils.CPUInfo) {
 	// 构建节点
 	for _, cpuInfo := range cpuInfos {
 		socketID := fmt.Sprintf("socket-%d", cpuInfo.SocketID)
-		nodeID := fmt.Sprintf("numa-%d", cpuInfo.NodeID)
+		numaNodeID := fmt.Sprintf("numa-%d", cpuInfo.NumaNodeID)
 		coreID := fmt.Sprintf("core-%d", cpuInfo.CoreID)
 
 		// 创建或获取 Socket 节点
 		socketNode := g.getNode(socketID, "Socket")
 
 		// 创建或获取 NUMA Node 节点
-		numaNode := g.getNode(nodeID, "NUMANode")
+		numaNode := g.getNode(numaNodeID, "NUMANode")
 		g.addEdge(socketNode, numaNode, "contains")
 
 		// 创建或获取 Core Group 节点
-		coreGroupID := fmt.Sprintf("coregroup-%d-%d", cpuInfo.NodeID, cpuInfo.CoreID/g.CoreGroupSize)
+		coreGroupID := fmt.Sprintf("coregroup-%d-%d", cpuInfo.NumaNodeID, cpuInfo.CoreID/g.CoreGroupSize)
 		coreGroupNode := g.getNode(coreGroupID, "CoreGroup")
-		coreGroupNode.Attributes["nodeID"] = cpuInfo.NodeID
+		coreGroupNode.Attributes["nodeID"] = cpuInfo.NumaNodeID
 		coreGroupNode.Attributes["groupIndex"] = cpuInfo.CoreID / g.CoreGroupSize
 		g.addEdge(numaNode, coreGroupNode, "contains")
 
