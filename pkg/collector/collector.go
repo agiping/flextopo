@@ -5,20 +5,20 @@ import (
 	"flextopo/pkg/utils"
 )
 
-// Collector 接口定义了收集拓扑信息的方法
+// Collector interface defines methods for collecting topology information
 type Collector interface {
-	// Collect 收集硬件拓扑和资源分配信息，返回构建的 FlexTopo 图
+	// Collect gathers hardware topology and resource allocation information, returns the constructed FlexTopo graph
 	Collect() (*graph.FlexTopoGraph, error)
 }
 
-// DefaultCollector 实现了 Collector 接口
+// DefaultCollector implements the Collector interface
 type DefaultCollector struct {
 	hardwareCollector *HardwareCollector
 	resourceCollector *ResourceCollector
 	logger            utils.Logger
 }
 
-// NewCollector 创建一个新的 DefaultCollector 实例
+// NewCollector creates a new instance of DefaultCollector
 func NewCollector(nodeName string, logger utils.Logger) (Collector, error) {
 	hardwareCollector := NewHardwareCollector(logger)
 	resourceCollector, err := NewResourceCollector(nodeName, logger)
@@ -32,15 +32,15 @@ func NewCollector(nodeName string, logger utils.Logger) (Collector, error) {
 	}, nil
 }
 
-// Collect 收集硬件和资源分配信息
+// Collect gathers hardware and resource allocation information
 func (dc *DefaultCollector) Collect() (*graph.FlexTopoGraph, error) {
-	// 收集硬件拓扑信息
+	// Collect hardware topology information
 	graph, err := dc.hardwareCollector.CollectHardwareInfo()
 	if err != nil {
 		return nil, err
 	}
 
-	// 收集资源分配信息
+	// Collect resource allocation information
 	err = dc.resourceCollector.CollectResourceInfo(graph)
 	if err != nil {
 		return nil, err

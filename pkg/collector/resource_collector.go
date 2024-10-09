@@ -3,13 +3,11 @@ package collector
 import (
 	"context"
 	"encoding/json"
-	"flextopo/pkg/graph"
-	"flextopo/pkg/utils"
 	"fmt"
-	"os/exec"
-
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
@@ -17,6 +15,9 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+
+	"flextopo/pkg/graph"
+	"flextopo/pkg/utils"
 )
 
 type ResourceCollector struct {
@@ -44,7 +45,7 @@ func NewResourceCollector(nodeName string, logger utils.Logger) (*ResourceCollec
 func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) error {
 	rc.logger.Info("Collecting dynamic resource allocation information")
 
-	// 获取当前节点上的 Pod 列表
+	// Get the list of Pods on the current node
 	pods, err := rc.clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector("spec.nodeName", rc.nodeName).String(),
 	})
@@ -52,7 +53,7 @@ func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) err
 		return err
 	}
 
-	// 遍历 Pod，更新资源分配状态
+	// Iterate through Pods and update resource allocation status
 	for _, pod := range pods.Items {
 		rc.processPod(&pod, graph)
 	}
@@ -60,16 +61,16 @@ func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) err
 	return nil
 }
 
-// processPod 处理单个 Pod，更新资源分配状态
+// processPod processes a single Pod and updates the resource allocation status on the FlexTopo graph
 func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGraph) {
-	// 获取 Pod 的所有容器的进程 ID
+	// Get the process IDs of all containers in the Pod
 	for _, containerStatus := range pod.Status.ContainerStatuses {
 		containerID := containerStatus.ContainerID
 		if containerID == "" {
 			continue
 		}
 
-		// 提取容器运行时和容器 ID
+		// Extract container runtime and container ID
 		parts := strings.Split(containerID, "://")
 		if len(parts) != 2 {
 			continue
@@ -77,62 +78,66 @@ func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGr
 		runtime := parts[0]
 		id := parts[1]
 
-		// 获取容器的进程 ID（PID）
+		// Get the process ID (PID) of the container
 		pid, err := rc.getContainerPID(runtime, id)
 		if err != nil {
 			rc.logger.Warn("Failed to get PID for container " + id + ": " + err.Error())
 			continue
 		}
 
-		// 获取容器实际使用的 CPU 核心
+		// Get the CPU cores actually used by the container
 		cpuCores, err := rc.getContainerCPUCores(pid)
 		if err != nil {
 			rc.logger.Warn("Failed to get CPU cores for container " + id + ": " + err.Error())
 			continue
 		}
 
-		// 更新拓扑图中对应 CPU Core 节点的状态
+		// Update the status of corresponding CPU Core nodes in the topology graph
 		graph.UpdateCPUUsage(pod.Name, cpuCores)
 
-		// 获取容器实际使用的 GPU
+		// Get the GPUs actually used by the container
 		gpuUUIDs, err := rc.getContainerGPUs(pid)
 		if err != nil {
 			rc.logger.Warn("Failed to get GPUs for container " + id + ": " + err.Error())
 			continue
 		}
 
-		// 更新拓扑图中对应 GPU 节点的状态
+		// Update the status of corresponding GPU nodes in the topology graph
 		graph.UpdateGPUUsage(pod.Name, gpuUUIDs)
 	}
 }
 
-// getContainerPID 获取容器的主进程 PID
+// getContainerPID gets the main process PID of the container
 func (rc *ResourceCollector) getContainerPID(runtime, id string) (string, error) {
-	// 针对不同的容器运行时，使用不同的方法获取 PID
-	// 以下以 containerd 为例
+	// Use different methods to get PID for different container runtimes
+	// The following is for containerd
 	if runtime == "containerd" {
-		// 使用 crictl 工具
+		// Use crictl tool
 		out, err := exec.Command("crictl", "inspect", "--output=json", id).Output()
 		if err != nil {
 			return "", err
 		}
-		// 解析 JSON，获取 PID
+		// Parse JSON to get PID
 		var data map[string]interface{}
 		json.Unmarshal(out, &data)
 		info, ok := data["info"].(map[string]interface{})
 		if !ok {
 			return "", fmt.Errorf("failed to parse container info")
 		}
-		pid := fmt.Sprintf("%.0f", info["pid"].(float64))
+		pidFloat, ok := info["pid"].(float64)
+		if !ok {
+			return "", fmt.Errorf("PID is not a number")
+		}
+		pid := strconv.Itoa(int(pidFloat))
 		return pid, nil
 	}
-	// TODO: 支持其他容器运行时
+	// TODO: Support other container runtimes
 	return "", fmt.Errorf("unsupported runtime: %s", runtime)
 }
 
-// getContainerCPUCores 获取容器实际使用的 CPU 核心列表
+// getContainerCPUCores gets the list of CPU cores actually used by the container
 func (rc *ResourceCollector) getContainerCPUCores(pid string) ([]int, error) {
-	// 读取 /proc/<pid>/status 中的 Cpus_allowed_list
+	// Read Cpus_allowed_list from /proc/<pid>/status
 	path := filepath.Join("/proc", pid, "status")
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -149,7 +154,7 @@ func (rc *ResourceCollector) getContainerCPUCores(pid string) ([]int, error) {
 	if cpuListLine == "" {
 		return nil, fmt.Errorf("failed to find Cpus_allowed_list in %s", path)
 	}
-	// 解析 CPU 列表
+	// Parse CPU list
 	cpuCores, err := utils.ParseCPUList(cpuListLine)
 	if err != nil {
 		return nil, err
@@ -157,9 +162,9 @@ func (rc *ResourceCollector) getContainerCPUCores(pid string) ([]int, error) {
 	return cpuCores, nil
 }
 
-// getContainerGPUs 获取容器实际使用的 GPU UUID 列表
+// getContainerGPUs gets the list of GPU UUIDs actually used by the container
 func (rc *ResourceCollector) getContainerGPUs(pid string) ([]string, error) {
-	// 使用 nvidia-smi 工具，获取每个 GPU 上运行的进程信息
+	// Use nvidia-smi tool to get process information running on each GPU
 	out, err := exec.Command("nvidia-smi", "--query-compute-apps=pid,gpu_uuid", "--format=csv,noheader,nounits").Output()
 	if err != nil {
 		return nil, err

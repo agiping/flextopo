@@ -51,7 +51,10 @@ func (l *SimpleLogger) Error(msg string) {
 
 // ParseCPUList 解析 CPU 列表字符串，返回 CPU 核心编号的整数切片
 func ParseCPUList(cpuListStr string) ([]int, error) {
-	var cpuCores []int
+	cpuCores := make([]int, 0)
+	if cpuListStr == "" {
+		return cpuCores, nil // 直接返回空切片
+	}
 	segments := strings.Split(cpuListStr, ",")
 	for _, segment := range segments {
 		segment = strings.TrimSpace(segment)
