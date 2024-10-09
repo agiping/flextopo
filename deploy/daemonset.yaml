@@ -24,7 +24,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: CORE_GROUP_SIZE
-              value: "8" # 可根据需要调整
+              value: "8" 
           volumeMounts:
             - name: host-sys
               mountPath: /host-sys

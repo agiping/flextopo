@@ -170,6 +170,7 @@ func (g *FlexTopoGraph) getNode(id, nodeType string) *Node {
 		ID:         id,
 		Type:       nodeType,
 		Attributes: make(map[string]interface{}),
+		Children:   []*Node{},
 	}
 	g.Nodes[id] = node
 	return node

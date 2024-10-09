@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 定时收集和上报拓扑信息
+	// collect and report topology data every 60 seconds
 	ticker := time.NewTicker(60 * time.Second)
 	defer ticker.Stop()
 

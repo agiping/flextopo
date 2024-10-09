@@ -4,7 +4,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// FlexTopo 定义了 CRD 的结构
+// FlexTopo defines the structure of the CRD
 type FlexTopo struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -13,27 +13,28 @@ type FlexTopo struct {
 	Status FlexTopoStatus `json:"status,omitempty"`
 }
 
-// FlexTopoSpec 定义了拓扑图的内容
+// FlexTopoSpec defines the content of the topology graph
 type FlexTopoSpec struct {
 	Nodes []FlexTopoNode `json:"nodes"`
 	Edges []FlexTopoEdge `json:"edges"`
 }
 
-// FlexTopoNode 表示拓扑图中的一个节点
+// FlexTopoNode represents a node in the topology graph
 type FlexTopoNode struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
+	Children   []*FlexTopoNode        `json:"children,omitempty"`
 }
 
-// FlexTopoEdge 表示拓扑图中的一条边
+// FlexTopoEdge represents an edge in the topology graph
 type FlexTopoEdge struct {
 	Source string `json:"source"`
 	Target string `json:"target"`
 	Type   string `json:"type"`
 }
 
-// FlexTopoStatus 可用于存储状态信息
+// FlexTopoStatus can be used to store status information
 type FlexTopoStatus struct {
-	// 可根据需要添加状态字段
+	// Add status fields as needed
 }

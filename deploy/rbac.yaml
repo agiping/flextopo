@@ -11,7 +11,7 @@ kind: ClusterRole
 metadata:
   name: flextopo-agent
 rules:
-  - apiGroups: ["flextopo.example.com"]
+  - apiGroups: ["flextopo.baichuan-inc.com"]
     resources: ["flextopos"]
     verbs: ["get", "list", "watch", "create", "update"]
   - apiGroups: [""]
