@@ -50,6 +50,12 @@ RUN apt-get update && \
     apt-get install -y nvidia-container-runtime && \
     rm -rf /var/lib/apt/lists/*
 
+# Install crictl
+RUN VERSION="v1.28.0" && \
+    curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz -o /tmp/crictl.tar.gz && \
+    tar zxvf /tmp/crictl.tar.gz -C /usr/local/bin && \
+    rm -rf /tmp/crictl.tar.gz
+
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
