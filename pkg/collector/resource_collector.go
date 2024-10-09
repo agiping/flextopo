@@ -91,6 +91,13 @@ func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGr
 			rc.logger.Warn("Failed to get CPU cores for container " + id + ": " + err.Error())
 			continue
 		}
+		// debugging:
+		// convert []int into []string
+		cpuCoresStr := make([]string, len(cpuCores))
+		for i, core := range cpuCores {
+			cpuCoresStr[i] = strconv.Itoa(core)
+		}
+		rc.logger.Info("====CPU cores of container " + id + ": " + strings.Join(cpuCoresStr, ", "))
 
 		// Update the status of corresponding CPU Core nodes in the topology graph
 		graph.UpdateCPUUsage(pod.Name, cpuCores)
