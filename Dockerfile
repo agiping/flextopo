@@ -32,7 +32,9 @@ RUN go build -a -installsuffix cgo -o flextopo-agent cmd/agent/main.go
 #     # clean apk cache
 #     rm -rf /var/cache/apk/*
 # Stage 2: Runtime stage, using a smaller base image
-FROM ubuntu:22.04
+# FROM ubuntu:22.04
+
+FROM nvidia/cuda:12.0-base
 
 # Install prerequisites
 RUN apt-get update && \
@@ -40,15 +42,15 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Add NVIDIA package repositories
-RUN curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
-    distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
-    curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
-    tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+# RUN curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
+#     distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+#     curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+#     tee /etc/apt/sources.list.d/nvidia-container-runtime.list
 
 # Update and install nvidia-container-runtime
-RUN apt-get update && \
-    apt-get install -y nvidia-container-runtime && \
-    rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && \
+#     apt-get install -y nvidia-container-runtime && \
+#     rm -rf /var/lib/apt/lists/*
 
 # Install crictl
 RUN VERSION="v1.28.0" && \
@@ -66,7 +68,7 @@ WORKDIR /root/
 COPY --from=builder /app/flextopo-agent .
 
 # Create mount points for host paths that need to be accessed
-VOLUME [ "/host-sys", "/host-proc" ]
+VOLUME [ "/host-sys", "/host-proc", "/run/containerd/containerd.sock" ]
 
 # Expose necessary ports (if needed)
 # EXPOSE 8080

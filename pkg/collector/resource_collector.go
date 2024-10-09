@@ -144,8 +144,8 @@ func (rc *ResourceCollector) getContainerPID(runtime, id string) (string, error)
 
 // getContainerCPUCores gets the list of CPU cores actually used by the container
 func (rc *ResourceCollector) getContainerCPUCores(pid string) ([]int, error) {
-	// Read Cpus_allowed_list from /proc/<pid>/status
-	path := filepath.Join("/proc", pid, "status")
+	// Read Cpus_allowed_list from /host-proc/<pid>/status
+	path := filepath.Join("/host-proc", pid, "status")
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
