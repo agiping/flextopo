@@ -15,7 +15,7 @@ spec:
       serviceAccountName: flextopo-agent
       containers:
         - name: flextopo-agent
-          image: harbor.ppio.baichuan-ai.com/resourcescheduler/flextopo:20241009
+          image: harbor.ppio.baichuan-ai.com/resourcescheduler/flextopo:20241009172709
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -33,6 +33,9 @@ spec:
             - name: host-proc
               mountPath: /host-proc
               readOnly: true
+            - name: containerd-socket
+              mountPath: /run/containerd/containerd.sock
+              readOnly: true
       volumes:
         - name: host-sys
           hostPath:
@@ -40,5 +43,9 @@ spec:
         - name: host-proc
           hostPath:
             path: /proc
+        - name: containerd-socket
+          hostPath:
+            path: /run/containerd/containerd.sock
+            type: Socket
       tolerations:
         - operator: "Exists"
