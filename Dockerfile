@@ -24,6 +24,14 @@ RUN go build -a -installsuffix cgo -o flextopo-agent cmd/agent/main.go
 # Stage 2: Runtime stage, using a smaller base image
 FROM alpine:3.20
 
+# install lscpu and nvidia-smi
+RUN apk update && \
+    apk add --no-cache \
+    util-linux \
+    nvidia-container-runtime && \
+    # clean apk cache
+    rm -rf /var/cache/apk/*
+
 # Set working directory
 WORKDIR /root/
 
