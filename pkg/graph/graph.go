@@ -117,7 +117,6 @@ func (g *FlexTopoGraph) UpdateGPUUsage(podName string, gpuUUIDs []string) {
 // addEdge adds an edge to the graph and maintains the Children field of nodes
 func (g *FlexTopoGraph) addEdge(source, target *Node, edgeType string) {
 	edgeKey := fmt.Sprintf("%s-%s-%s", source.ID, target.ID, edgeType)
-	fmt.Println("edgeKey:", edgeKey)
 	if _, exists := g.Edges[edgeKey]; !exists {
 		edge := &Edge{
 			Source: source,

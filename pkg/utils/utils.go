@@ -1,15 +1,14 @@
 package utils
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
+	"runtime"
 	"strconv"
 	"strings"
 )
 
-// Atoi 将字符串转换为整数，包含错误处理
+// Atoi converts a string to an integer, including error handling
 func Atoi(s string) int {
 	i, err := strconv.Atoi(s)
 	if err != nil {
@@ -19,7 +18,7 @@ func Atoi(s string) int {
 	return i
 }
 
-// CPUInfo 表示单个 CPU 的信息
+// CPUInfo represents information for a single CPU
 type CPUInfo struct {
 	CPUID      int
 	CoreID     int
@@ -27,33 +26,62 @@ type CPUInfo struct {
 	NumaNodeID int
 }
 
-// Logger 接口定义了日志方法
+// Logger interface defines logging methods
 type Logger interface {
 	Info(msg string)
 	Warn(msg string)
 	Error(msg string)
+	Infof(format string, args ...interface{})
+	Warnf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
 }
 
-// SimpleLogger 是一个简单的 Logger 实现
+// SimpleLogger implements the Logger interface
 type SimpleLogger struct{}
 
 func (l *SimpleLogger) Info(msg string) {
-	log.Printf("[INFO] %s", msg)
+	log.Printf("[INFO] %s", l.formatLog(msg))
+}
+
+func (l *SimpleLogger) Infof(format string, args ...interface{}) {
+	log.Printf("[INFO] %s", l.formatLog(fmt.Sprintf(format, args...)))
 }
 
 func (l *SimpleLogger) Warn(msg string) {
-	log.Printf("[WARN] %s", msg)
+	log.Printf("[WARN] %s", l.formatLog(msg))
+}
+
+func (l *SimpleLogger) Warnf(format string, args ...interface{}) {
+	log.Printf("[WARN] %s", l.formatLog(fmt.Sprintf(format, args...)))
 }
 
 func (l *SimpleLogger) Error(msg string) {
-	log.Printf("[ERROR] %s", msg)
+	log.Printf("[ERROR] %s", l.formatLog(msg))
 }
 
-// ParseCPUList 解析 CPU 列表字符串，返回 CPU 核心编号的整数切片
+func (l *SimpleLogger) Errorf(format string, args ...interface{}) {
+	log.Printf("[ERROR] %s", l.formatLog(fmt.Sprintf(format, args...)))
+}
+
+func (l *SimpleLogger) formatLog(msg string) string {
+	_, file, line, ok := runtime.Caller(2)
+	if !ok {
+		file = "unknown"
+		line = 0
+	} else {
+		// Get only the file name
+		if lastSlash := strings.LastIndex(file, "/"); lastSlash != -1 {
+			file = file[lastSlash+1:]
+		}
+	}
+	return fmt.Sprintf("%s:%d %s", file, line, msg)
+}
+
+// ParseCPUList parses a CPU list string and returns a slice of CPU core numbers as integers
 func ParseCPUList(cpuListStr string) ([]int, error) {
 	cpuCores := make([]int, 0)
 	if cpuListStr == "" {
-		return cpuCores, nil // 直接返回空切片
+		return cpuCores, nil // Return empty slice directly
 	}
 	segments := strings.Split(cpuListStr, ",")
 	for _, segment := range segments {
@@ -62,7 +90,7 @@ func ParseCPUList(cpuListStr string) ([]int, error) {
 			continue
 		}
 		if strings.Contains(segment, "-") {
-			// 处理范围，例如 "0-3"
+			// Handle range, e.g., "0-3"
 			bounds := strings.Split(segment, "-")
 			if len(bounds) != 2 {
 				return nil, fmt.Errorf("invalid CPU range: %s", segment)
@@ -82,7 +110,7 @@ func ParseCPUList(cpuListStr string) ([]int, error) {
 				cpuCores = append(cpuCores, i)
 			}
 		} else {
-			// 处理单个数字，例如 "5"
+			// Handle single number, e.g., "5"
 			cpuNum, err := strconv.Atoi(segment)
 			if err != nil {
 				return nil, fmt.Errorf("invalid CPU number: %s", segment)
@@ -93,7 +121,7 @@ func ParseCPUList(cpuListStr string) ([]int, error) {
 	return cpuCores, nil
 }
 
-// ParseLSCPUOutput 解析 lscpu 命令的输出
+// ParseLSCPUOutput parses the output of the lscpu command
 func ParseLSCPUOutput(output string) []CPUInfo {
 	lines := strings.Split(output, "\n")
 	var cpuInfos []CPUInfo
@@ -119,9 +147,4 @@ func ParseLSCPUOutput(output string) []CPUInfo {
 		cpuInfos = append(cpuInfos, cpuInfo)
 	}
 	return cpuInfos
-}
-
-func WaitForInput() {
-	fmt.Print("waiting input...")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
