@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -86,4 +88,37 @@ func ParseCPUList(cpuListStr string) ([]int, error) {
 		}
 	}
 	return cpuCores, nil
+}
+
+// ParseLSCPUOutput 解析 lscpu 命令的输出
+func ParseLSCPUOutput(output string) []CPUInfo {
+	lines := strings.Split(output, "\n")
+	var cpuInfos []CPUInfo
+	for _, line := range lines {
+		if strings.HasPrefix(line, "#") || line == "" {
+			continue
+		}
+		fields := strings.Split(line, ",")
+		if len(fields) < 4 {
+			continue
+		}
+		cpuID := Atoi(fields[0])
+		coreID := Atoi(fields[1])
+		socketID := Atoi(fields[2])
+		numaNodeID := Atoi(fields[3])
+
+		cpuInfo := CPUInfo{
+			CPUID:      cpuID,
+			CoreID:     coreID,
+			SocketID:   socketID,
+			NumaNodeID: numaNodeID,
+		}
+		cpuInfos = append(cpuInfos, cpuInfo)
+	}
+	return cpuInfos
+}
+
+func WaitForInput() {
+	fmt.Print("waiting input...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }

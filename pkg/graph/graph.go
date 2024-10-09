@@ -7,26 +7,28 @@ import (
 	"sort"
 )
 
-// FlexTopoGraph 表示整个拓扑图
+// FlexTopoGraph represents the entire topology graph
 type FlexTopoGraph struct {
-	Nodes map[string]*Node
-	Edges []*Edge
-	// 新增字段
-	CoreGroupSize int // CPU 核心分组大小，可配置
+	Nodes map[string]*Node // key: nodeID, value: node
+	// key: edgeID, value: edge
+	// edgeID = sourceID + "-" + targetID + "-" + edgeType
+	Edges map[string]*Edge
+	// CPU core group size, configurable
+	CoreGroupSize int
 }
 
-// NewFlexTopoGraph 创建一个新的 FlexTopoGraph 实例
+// NewFlexTopoGraph creates a new instance of FlexTopoGraph
 func NewFlexTopoGraph(coreGroupSize int) *FlexTopoGraph {
 	return &FlexTopoGraph{
 		Nodes:         make(map[string]*Node),
-		Edges:         []*Edge{},
+		Edges:         make(map[string]*Edge), // Initialize as an empty map
 		CoreGroupSize: coreGroupSize,
 	}
 }
 
-// BuildCPUNodes 根据 CPU 信息构建节点和边
+// BuildCPUNodes builds nodes and edges based on CPU information
 func (g *FlexTopoGraph) BuildCPUNodes(cpuInfos []utils.CPUInfo) {
-	// 按照 Socket、NUMA、CoreID 对 CPUInfo 进行排序
+	// Sort CPUInfo by Socket, NUMA, CoreID
 	sort.Slice(cpuInfos, func(i, j int) bool {
 		if cpuInfos[i].SocketID != cpuInfos[j].SocketID {
 			return cpuInfos[i].SocketID < cpuInfos[j].SocketID
@@ -37,34 +39,34 @@ func (g *FlexTopoGraph) BuildCPUNodes(cpuInfos []utils.CPUInfo) {
 		return cpuInfos[i].CoreID < cpuInfos[j].CoreID
 	})
 
-	// 构建节点
+	// Build nodes
 	for _, cpuInfo := range cpuInfos {
 		socketID := fmt.Sprintf("socket-%d", cpuInfo.SocketID)
 		numaNodeID := fmt.Sprintf("numa-%d", cpuInfo.NumaNodeID)
 		coreID := fmt.Sprintf("core-%d", cpuInfo.CoreID)
 
-		// 创建或获取 Socket 节点
+		// Create or get Socket node
 		socketNode := g.getNode(socketID, "Socket")
 
-		// 创建或获取 NUMA Node 节点
+		// Create or get NUMA Node node
 		numaNode := g.getNode(numaNodeID, "NUMANode")
 		g.addEdge(socketNode, numaNode, "contains")
 
-		// 创建或获取 Core Group 节点
+		// Create or get Core Group node
 		coreGroupID := fmt.Sprintf("coregroup-%d-%d", cpuInfo.NumaNodeID, cpuInfo.CoreID/g.CoreGroupSize)
 		coreGroupNode := g.getNode(coreGroupID, "CoreGroup")
 		coreGroupNode.Attributes["nodeID"] = cpuInfo.NumaNodeID
 		coreGroupNode.Attributes["groupIndex"] = cpuInfo.CoreID / g.CoreGroupSize
 		g.addEdge(numaNode, coreGroupNode, "contains")
 
-		// 创建 CPU Core 节点
+		// Create CPU Core node
 		coreNode := g.getNode(coreID, "CPUCore")
 		coreNode.Attributes["status"] = "free"
 		g.addEdge(coreGroupNode, coreNode, "contains")
 	}
 }
 
-// NewGPUNode 创建一个新的 GPU 节点
+// NewGPUNode creates a new GPU node
 func (g *FlexTopoGraph) NewGPUNode(index int, uuid, name string, memoryTotal int) *Node {
 	gpuID := fmt.Sprintf("gpu-%d", index)
 	gpuNode := &Node{
@@ -80,12 +82,12 @@ func (g *FlexTopoGraph) NewGPUNode(index int, uuid, name string, memoryTotal int
 	return gpuNode
 }
 
-// AddNode 将节点添加到图中
+// AddNode adds a node to the graph
 func (g *FlexTopoGraph) AddNode(node *Node) {
 	g.Nodes[node.ID] = node
 }
 
-// UpdateCPUUsage 更新 CPU Core 节点的使用状态
+// UpdateCPUUsage updates the usage status of CPU Core nodes
 func (g *FlexTopoGraph) UpdateCPUUsage(podName string, cpuCores []int) {
 	for _, coreID := range cpuCores {
 		nodeID := fmt.Sprintf("core-%d", coreID)
@@ -96,10 +98,10 @@ func (g *FlexTopoGraph) UpdateCPUUsage(podName string, cpuCores []int) {
 	}
 }
 
-// UpdateGPUUsage 更新 GPU 节点的使用状态
+// UpdateGPUUsage updates the usage status of GPU nodes
 func (g *FlexTopoGraph) UpdateGPUUsage(podName string, gpuUUIDs []string) {
 	for _, uuid := range gpuUUIDs {
-		// 找到对应的 GPU 节点
+		// Find the corresponding GPU node
 		for _, node := range g.Nodes {
 			if node.Type == "GPU" {
 				if node.Attributes["uuid"] == uuid {
@@ -112,7 +114,54 @@ func (g *FlexTopoGraph) UpdateGPUUsage(podName string, gpuUUIDs []string) {
 	}
 }
 
-// getNode 获取或创建节点
+// addEdge adds an edge to the graph and maintains the Children field of nodes
+func (g *FlexTopoGraph) addEdge(source, target *Node, edgeType string) {
+	edgeKey := fmt.Sprintf("%s-%s-%s", source.ID, target.ID, edgeType)
+	fmt.Println("edgeKey:", edgeKey)
+	if _, exists := g.Edges[edgeKey]; !exists {
+		edge := &Edge{
+			Source: source,
+			Target: target,
+			Type:   edgeType,
+		}
+		g.Edges[edgeKey] = edge
+
+		// Maintain the Children field
+		source.Children = append(source.Children, target)
+	}
+}
+
+// ToSpec converts FlexTopoGraph to FlexTopoSpec
+func (g *FlexTopoGraph) ToSpec() *crd.FlexTopoSpec {
+	spec := &crd.FlexTopoSpec{
+		Nodes: []crd.FlexTopoNode{},
+		Edges: []crd.FlexTopoEdge{},
+	}
+
+	// Convert nodes
+	for _, node := range g.Nodes {
+		specNode := crd.FlexTopoNode{
+			ID:         node.ID,
+			Type:       node.Type,
+			Attributes: node.Attributes,
+		}
+		spec.Nodes = append(spec.Nodes, specNode)
+	}
+
+	// Convert edges
+	for _, edge := range g.Edges {
+		specEdge := crd.FlexTopoEdge{
+			Source: edge.Source.ID,
+			Target: edge.Target.ID,
+			Type:   edge.Type,
+		}
+		spec.Edges = append(spec.Edges, specEdge)
+	}
+
+	return spec
+}
+
+// getNode gets or creates a node
 func (g *FlexTopoGraph) getNode(id, nodeType string) *Node {
 	if node, exists := g.Nodes[id]; exists {
 		return node
@@ -126,45 +175,24 @@ func (g *FlexTopoGraph) getNode(id, nodeType string) *Node {
 	return node
 }
 
-// addEdge 添加边到图中，并维护节点的 Children
-func (g *FlexTopoGraph) addEdge(source, target *Node, edgeType string) {
-	edge := &Edge{
-		Source: source,
-		Target: target,
-		Type:   edgeType,
+// Helper function to get all nodes of a specific type
+func (g *FlexTopoGraph) getNodesByType(nodeType string) []*Node {
+	var nodes []*Node
+	for _, node := range g.Nodes {
+		if node.Type == nodeType {
+			nodes = append(nodes, node)
+		}
 	}
-	g.Edges = append(g.Edges, edge)
-
-	// 维护 Children 字段
-	source.Children = append(source.Children, target)
+	return nodes
 }
 
-// ToSpec 将 FlexTopoGraph 转换为 FlexTopoSpec
-func (g *FlexTopoGraph) ToSpec() *crd.FlexTopoSpec {
-	spec := &crd.FlexTopoSpec{
-		Nodes: []crd.FlexTopoNode{},
-		Edges: []crd.FlexTopoEdge{},
-	}
-
-	// 转换节点
-	for _, node := range g.Nodes {
-		specNode := crd.FlexTopoNode{
-			ID:         node.ID,
-			Type:       node.Type,
-			Attributes: node.Attributes,
-		}
-		spec.Nodes = append(spec.Nodes, specNode)
-	}
-
-	// 转换边
+// Helper function to get edges of a specific type originating from a source node
+func (g *FlexTopoGraph) getEdges(source *Node, edgeType string) []*Edge {
+	var edges []*Edge
 	for _, edge := range g.Edges {
-		specEdge := crd.FlexTopoEdge{
-			Source: edge.Source.ID,
-			Target: edge.Target.ID,
-			Type:   edge.Type,
+		if edge.Source == source && edge.Type == edgeType {
+			edges = append(edges, edge)
 		}
-		spec.Edges = append(spec.Edges, specEdge)
 	}
-
-	return spec
+	return edges
 }

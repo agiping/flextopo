@@ -59,38 +59,10 @@ func (hc *HardwareCollector) collectCPUNUMAInfo(graph *graph.FlexTopoGraph) erro
 	}
 
 	// 解析输出，构建节点和关系
-	cpuInfo := parseLSCPUOutput(string(out))
+	cpuInfo := utils.ParseLSCPUOutput(string(out))
 	graph.BuildCPUNodes(cpuInfo)
 
 	return nil
-}
-
-// parseLSCPUOutput 解析 lscpu 命令的输出
-func parseLSCPUOutput(output string) []utils.CPUInfo {
-	lines := strings.Split(output, "\n")
-	var cpuInfos []utils.CPUInfo
-	for _, line := range lines {
-		if strings.HasPrefix(line, "#") || line == "" {
-			continue
-		}
-		fields := strings.Split(line, ",")
-		if len(fields) < 4 {
-			continue
-		}
-		cpuID := utils.Atoi(fields[0])
-		coreID := utils.Atoi(fields[1])
-		socketID := utils.Atoi(fields[2])
-		numaNodeID := utils.Atoi(fields[3])
-
-		cpuInfo := utils.CPUInfo{
-			CPUID:      cpuID,
-			CoreID:     coreID,
-			SocketID:   socketID,
-			NumaNodeID: numaNodeID,
-		}
-		cpuInfos = append(cpuInfos, cpuInfo)
-	}
-	return cpuInfos
 }
 
 // collectGPUInfo 收集 GPU 信息

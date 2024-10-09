@@ -80,7 +80,7 @@ func TestParseLSCPUOutput(t *testing.T) {
 63,63,1,7`
 
 	// 调用被测试的函数
-	result := parseLSCPUOutput(testInput)
+	result := utils.ParseLSCPUOutput(testInput)
 
 	// 验证结果
 	expectedLength := 64
