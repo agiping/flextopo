@@ -13,12 +13,12 @@ spec:
         app: flextopo-agent
     spec:
       serviceAccountName: flextopo-agent
-      securityContext:
-        privileged: true
-      imagePullPolicy: IfNotPresent
       containers:
         - name: flextopo-agent
           image: harbor.ppio.baichuan-ai.com/resourcescheduler/flextopo:20241009
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
           env:
             - name: NODE_NAME
               valueFrom:
