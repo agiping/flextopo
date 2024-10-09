@@ -34,7 +34,33 @@ RUN go build -a -installsuffix cgo -o flextopo-agent cmd/agent/main.go
 # Stage 2: Runtime stage, using a smaller base image
 # FROM ubuntu:22.04
 
-FROM nvidia/cuda:12.0-base
+# FROM nvidia/cuda:12.0-base
+
+# # Install prerequisites
+# RUN apt-get update && \
+#     apt-get install -y curl gnupg2 ca-certificates && \
+#     rm -rf /var/lib/apt/lists/*
+
+# # Add NVIDIA package repositories
+# # RUN curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
+# #     distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+# #     curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+# #     tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+
+# # Update and install nvidia-container-runtime
+# # RUN apt-get update && \
+# #     apt-get install -y nvidia-container-runtime && \
+# #     rm -rf /var/lib/apt/lists/*
+
+# # Install crictl
+# RUN VERSION="v1.28.0" && \
+#     curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz -o /tmp/crictl.tar.gz && \
+#     tar zxvf /tmp/crictl.tar.gz -C /usr/local/bin && \
+#     rm -rf /tmp/crictl.tar.gz
+
+# # Clean up
+# RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+FROM ubuntu:22.04
 
 # Install prerequisites
 RUN apt-get update && \
@@ -42,15 +68,15 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Add NVIDIA package repositories
-# RUN curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
-#     distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
-#     curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
-#     tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+RUN curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+    curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+    tee /etc/apt/sources.list.d/nvidia-container-runtime.list
 
 # Update and install nvidia-container-runtime
-# RUN apt-get update && \
-#     apt-get install -y nvidia-container-runtime && \
-#     rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y nvidia-container-runtime && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install crictl
 RUN VERSION="v1.28.0" && \
