@@ -21,16 +21,37 @@ ENV GOARCH=amd64
 # Build the project
 RUN go build -a -installsuffix cgo -o flextopo-agent cmd/agent/main.go
 
-# Stage 2: Runtime stage, using a smaller base image
-FROM alpine:3.20
+# # Stage 2: Runtime stage, using a smaller base image
+# FROM alpine:3.20
 
-# install lscpu and nvidia-smi
-RUN apk update && \
-    apk add --no-cache \
-    util-linux \
-    nvidia-container-runtime && \
-    # clean apk cache
-    rm -rf /var/cache/apk/*
+# # install lscpu and nvidia-smi
+# RUN apk update && \
+#     apk add --no-cache \
+#     util-linux \
+#     nvidia-container-runtime && \
+#     # clean apk cache
+#     rm -rf /var/cache/apk/*
+# Stage 2: Runtime stage, using a smaller base image
+FROM ubuntu:22.04
+
+# Install prerequisites
+RUN apt-get update && \
+    apt-get install -y curl gnupg2 ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Add NVIDIA package repositories
+RUN curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+    curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+    tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+
+# Update and install nvidia-container-runtime
+RUN apt-get update && \
+    apt-get install -y nvidia-container-runtime && \
+    rm -rf /var/lib/apt/lists/*
+
+# Clean up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set working directory
 WORKDIR /root/
