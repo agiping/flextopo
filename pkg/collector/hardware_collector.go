@@ -64,7 +64,7 @@ func (hc *HardwareCollector) collectGPUInfo(graph *graph.FlexTopoGraph) error {
 	hc.logger.Info("Collecting GPU information")
 
 	// Use nvidia-smi command to get GPU information
-	out, err := exec.Command("nvidia-smi", "--query-gpu=index,uuid,name,memory.total", "--format=csv,noheader,nounits").Output()
+	out, err := exec.Command("/host-bin/nvidia-smi", "--query-gpu=index,uuid,name,memory.total", "--format=csv,noheader,nounits").Output()
 	if err != nil {
 		hc.logger.Warn("nvidia-smi command failed, assuming no GPUs present")
 		return nil // No GPUs, return directly
