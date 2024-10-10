@@ -17,6 +17,9 @@ spec:
         - name: flextopo-agent
           image: harbor.ppio.baichuan-ai.com/resourcescheduler/flextopo:20241009172709
           imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              nvidia.com/gpu: 0 # we keep this for the execution of nvidia-smi
           securityContext:
             privileged: true
           env:

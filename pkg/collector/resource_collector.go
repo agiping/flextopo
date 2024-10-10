@@ -97,7 +97,7 @@ func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGr
 		for i, core := range cpuCores {
 			cpuCoresStr[i] = strconv.Itoa(core)
 		}
-		rc.logger.Info("====CPU cores of container " + id + ": " + strings.Join(cpuCoresStr, ", "))
+		// rc.logger.Info("====CPU cores of container " + id + ": " + strings.Join(cpuCoresStr, ", "))
 
 		// Update the status of corresponding CPU Core nodes in the topology graph
 		graph.UpdateCPUUsage(pod.Name, cpuCores)
@@ -172,7 +172,7 @@ func (rc *ResourceCollector) getContainerCPUCores(pid string) ([]int, error) {
 // getContainerGPUs gets the list of GPU UUIDs actually used by the container
 func (rc *ResourceCollector) getContainerGPUs(pid string) ([]string, error) {
 	// Use nvidia-smi tool to get process information running on each GPU
-	out, err := exec.Command("nvidia-smi", "--query-compute-apps=pid,gpu_uuid", "--format=csv,noheader,nounits").Output()
+	out, err := exec.Command("/host-bin/nvidia-smi", "--query-compute-apps=pid,gpu_uuid", "--format=csv,noheader,nounits").Output()
 	if err != nil {
 		return nil, err
 	}
