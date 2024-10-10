@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// collect and report topology data every 60 seconds
-	ticker := time.NewTicker(60 * time.Second)
+	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
 	for {
