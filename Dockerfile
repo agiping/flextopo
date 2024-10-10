@@ -23,7 +23,7 @@ RUN go build -a -installsuffix cgo -o flextopo-agent cmd/agent/main.go
 
 # # Stage 2: Runtime stage, using a smaller base image
 # FROM ubuntu:22.04
-FROM nvidia/cuda:11.0.3-devel-ubuntu20.04
+FROM ubuntu:22.04
 
 # Install prerequisites
 RUN apt-get update && \
