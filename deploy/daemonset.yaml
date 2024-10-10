@@ -38,6 +38,13 @@ spec:
               readOnly: true
             - name: host-nvidia
               mountPath: /host-bin
+            - mountPath: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+              name: libnvidia-ml
+              readOnly: true
+            - mountPath: /dev/nvidiactl
+              name: nvidiactl
+            - mountPath: /dev/nvidia0
+              name: nvidia0
       volumes:
         - name: host-sys
           hostPath:
@@ -52,5 +59,14 @@ spec:
         - name: host-nvidia
           hostPath:
             path: /usr/bin
+        - name: libnvidia-ml
+          hostPath:
+            path: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+        - name: nvidiactl
+          hostPath:
+            path: /dev/nvidiactl
+        - name: nvidia0
+          hostPath:
+            path: /dev/nvidia0
       tolerations:
         - operator: "Exists"
