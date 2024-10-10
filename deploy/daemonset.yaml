@@ -12,6 +12,8 @@ spec:
       labels:
         app: flextopo-agent
     spec:
+      nodeSelector:
+        accelerator: gpu-rtx-4090 # only focus on GPU server
       serviceAccountName: flextopo-agent
       containers:
         - name: flextopo-agent
