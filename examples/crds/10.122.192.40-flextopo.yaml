@@ -1,0 +1,697 @@
+apiVersion: flextopo.baichuan-inc.com/v1alpha1
+kind: FlexTopo
+metadata:
+  creationTimestamp: "2024-10-10T07:31:23Z"
+  generation: 1
+  name: 10.122.192.40
+  resourceVersion: "20944805"
+  uid: 52cb388d-bb0a-426e-a306-a503564c251a
+spec:
+  edges:
+  - source: coregroup-4-4
+    target: core-39
+    type: contains
+  - source: socket-1
+    target: numa-5
+    type: contains
+  - source: coregroup-1-1
+    target: core-9
+    type: contains
+  - source: coregroup-3-3
+    target: core-24
+    type: contains
+  - source: coregroup-6-6
+    target: core-53
+    type: contains
+  - source: socket-0
+    target: numa-2
+    type: contains
+  - source: coregroup-2-2
+    target: core-20
+    type: contains
+  - source: coregroup-3-3
+    target: core-30
+    type: contains
+  - source: coregroup-4-4
+    target: core-37
+    type: contains
+  - source: numa-5
+    target: coregroup-5-5
+    type: contains
+  - source: coregroup-7-7
+    target: core-61
+    type: contains
+  - source: coregroup-0-0
+    target: core-0
+    type: contains
+  - source: socket-0
+    target: numa-1
+    type: contains
+  - source: coregroup-3-3
+    target: core-27
+    type: contains
+  - source: coregroup-4-4
+    target: core-33
+    type: contains
+  - source: coregroup-5-5
+    target: core-43
+    type: contains
+  - source: coregroup-6-6
+    target: core-48
+    type: contains
+  - source: coregroup-1-1
+    target: core-8
+    type: contains
+  - source: coregroup-2-2
+    target: core-22
+    type: contains
+  - source: coregroup-4-4
+    target: core-34
+    type: contains
+  - source: coregroup-7-7
+    target: core-59
+    type: contains
+  - source: coregroup-7-7
+    target: core-62
+    type: contains
+  - source: coregroup-2-2
+    target: core-17
+    type: contains
+  - source: socket-1
+    target: numa-4
+    type: contains
+  - source: numa-6
+    target: coregroup-6-6
+    type: contains
+  - source: coregroup-6-6
+    target: core-50
+    type: contains
+  - source: coregroup-6-6
+    target: core-52
+    type: contains
+  - source: coregroup-0-0
+    target: core-4
+    type: contains
+  - source: numa-2
+    target: coregroup-2-2
+    type: contains
+  - source: coregroup-1-1
+    target: core-15
+    type: contains
+  - source: coregroup-4-4
+    target: core-32
+    type: contains
+  - source: socket-0
+    target: numa-0
+    type: contains
+  - source: coregroup-1-1
+    target: core-11
+    type: contains
+  - source: socket-0
+    target: numa-3
+    type: contains
+  - source: coregroup-3-3
+    target: core-28
+    type: contains
+  - source: coregroup-4-4
+    target: core-35
+    type: contains
+  - source: coregroup-6-6
+    target: core-51
+    type: contains
+  - source: socket-1
+    target: numa-7
+    type: contains
+  - source: coregroup-0-0
+    target: core-6
+    type: contains
+  - source: coregroup-1-1
+    target: core-12
+    type: contains
+  - source: coregroup-0-0
+    target: core-3
+    type: contains
+  - source: coregroup-1-1
+    target: core-13
+    type: contains
+  - source: coregroup-2-2
+    target: core-21
+    type: contains
+  - source: numa-4
+    target: coregroup-4-4
+    type: contains
+  - source: coregroup-5-5
+    target: core-40
+    type: contains
+  - source: coregroup-5-5
+    target: core-44
+    type: contains
+  - source: coregroup-7-7
+    target: core-57
+    type: contains
+  - source: coregroup-7-7
+    target: core-63
+    type: contains
+  - source: coregroup-1-1
+    target: core-14
+    type: contains
+  - source: coregroup-2-2
+    target: core-19
+    type: contains
+  - source: coregroup-0-0
+    target: core-7
+    type: contains
+  - source: coregroup-2-2
+    target: core-16
+    type: contains
+  - source: coregroup-5-5
+    target: core-42
+    type: contains
+  - source: coregroup-5-5
+    target: core-47
+    type: contains
+  - source: coregroup-7-7
+    target: core-58
+    type: contains
+  - source: numa-0
+    target: coregroup-0-0
+    type: contains
+  - source: coregroup-0-0
+    target: core-1
+    type: contains
+  - source: socket-1
+    target: numa-6
+    type: contains
+  - source: coregroup-7-7
+    target: core-60
+    type: contains
+  - source: coregroup-2-2
+    target: core-23
+    type: contains
+  - source: coregroup-5-5
+    target: core-46
+    type: contains
+  - source: coregroup-3-3
+    target: core-31
+    type: contains
+  - source: coregroup-5-5
+    target: core-41
+    type: contains
+  - source: coregroup-6-6
+    target: core-49
+    type: contains
+  - source: coregroup-6-6
+    target: core-54
+    type: contains
+  - source: numa-3
+    target: coregroup-3-3
+    type: contains
+  - source: coregroup-3-3
+    target: core-25
+    type: contains
+  - source: coregroup-2-2
+    target: core-18
+    type: contains
+  - source: coregroup-3-3
+    target: core-26
+    type: contains
+  - source: coregroup-3-3
+    target: core-29
+    type: contains
+  - source: coregroup-4-4
+    target: core-36
+    type: contains
+  - source: coregroup-4-4
+    target: core-38
+    type: contains
+  - source: coregroup-7-7
+    target: core-56
+    type: contains
+  - source: coregroup-0-0
+    target: core-5
+    type: contains
+  - source: numa-1
+    target: coregroup-1-1
+    type: contains
+  - source: coregroup-6-6
+    target: core-55
+    type: contains
+  - source: coregroup-0-0
+    target: core-2
+    type: contains
+  - source: coregroup-5-5
+    target: core-45
+    type: contains
+  - source: coregroup-1-1
+    target: core-10
+    type: contains
+  - source: numa-7
+    target: coregroup-7-7
+    type: contains
+  nodes:
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-51
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-57
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-19
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-21
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-24
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-40
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-47
+    type: CPUCore
+  - attributes: {}
+    id: socket-0
+    type: Socket
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-9
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-39
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-45
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-31
+    type: CPUCore
+  - attributes:
+      groupIndex: 5
+      nodeID: 5
+    id: coregroup-5-5
+    type: CoreGroup
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-63
+    type: CPUCore
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-9b6076ba-e2e9-ac05-8b18-b79207166322
+    id: gpu-4
+    type: GPU
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-5
+    type: CPUCore
+  - attributes: {}
+    id: numa-3
+    type: NUMANode
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-25
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-29
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-62
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-6
+    type: CPUCore
+  - attributes:
+      groupIndex: 1
+      nodeID: 1
+    id: coregroup-1-1
+    type: CoreGroup
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-59
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-61
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-8
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-14
+    type: CPUCore
+  - attributes: {}
+    id: numa-4
+    type: NUMANode
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-c4c7fe62-2935-01d1-41fd-73ac503b274f
+    id: gpu-3
+    type: GPU
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-52
+    type: CPUCore
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-34e3c37f-ef69-844c-37c8-c131cb0c4c6c
+    id: gpu-1
+    type: GPU
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-17
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-33
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-41
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-43
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-22
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-48
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-54
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-37
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-55
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-2
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-10
+    type: CPUCore
+  - attributes: {}
+    id: numa-2
+    type: NUMANode
+  - attributes:
+      groupIndex: 3
+      nodeID: 3
+    id: coregroup-3-3
+    type: CoreGroup
+  - attributes: {}
+    id: numa-7
+    type: NUMANode
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-58
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-60
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-0
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-7
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-18
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-26
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-38
+    type: CPUCore
+  - attributes: {}
+    id: numa-6
+    type: NUMANode
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-49
+    type: CPUCore
+  - attributes:
+      groupIndex: 7
+      nodeID: 7
+    id: coregroup-7-7
+    type: CoreGroup
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-3
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-11
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-13
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-35
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-23
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-28
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-42
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-44
+    type: CPUCore
+  - attributes:
+      groupIndex: 0
+      nodeID: 0
+    id: coregroup-0-0
+    type: CoreGroup
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-4
+    type: CPUCore
+  - attributes: {}
+    id: numa-1
+    type: NUMANode
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-12
+    type: CPUCore
+  - attributes:
+      groupIndex: 6
+      nodeID: 6
+    id: coregroup-6-6
+    type: CoreGroup
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-491174bc-6128-3f74-e800-e331b08684e5
+    id: gpu-5
+    type: GPU
+  - attributes: {}
+    id: numa-5
+    type: NUMANode
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-53
+    type: CPUCore
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-a5790b52-dc1e-dc36-f081-15bdd57597f5
+    id: gpu-6
+    type: GPU
+  - attributes: {}
+    id: numa-0
+    type: NUMANode
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-1
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-15
+    type: CPUCore
+  - attributes:
+      groupIndex: 2
+      nodeID: 2
+    id: coregroup-2-2
+    type: CoreGroup
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-20
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-34
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-50
+    type: CPUCore
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-afe57b14-83a7-b52f-1693-16aa32ccc57f
+    id: gpu-0
+    type: GPU
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-16
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-30
+    type: CPUCore
+  - attributes: {}
+    id: socket-1
+    type: Socket
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-32
+    type: CPUCore
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-7a22a8bc-ccd2-2014-876d-e3cbb0ca1ada
+    id: gpu-2
+    type: GPU
+  - attributes:
+      memoryTotal: 24564
+      name: NVIDIA GeForce RTX 4090
+      status: free
+      uuid: GPU-917db8e0-494e-4c2a-ac28-872f424517ed
+    id: gpu-7
+    type: GPU
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-56
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: p-60-1-cards-74797b5b95-tng9q
+    id: core-27
+    type: CPUCore
+  - attributes:
+      groupIndex: 4
+      nodeID: 4
+    id: coregroup-4-4
+    type: CoreGroup
+  - attributes:
+      status: used
+      usedBy: p-80-2-cards-768f94d869-z4gjn
+    id: core-36
+    type: CPUCore
+  - attributes:
+      status: used
+      usedBy: prometheus-prometheus-node-exporter-mbj8l
+    id: core-46
+    type: CPUCore
