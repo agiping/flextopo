@@ -38,6 +38,11 @@ spec:
                         type: string
                       type:
                         type: string
+            status:
+              type: object
+              additionalProperties: true
+      subresources:
+        status: {}
   scope: Cluster
   names:
     plural: flextopos
