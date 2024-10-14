@@ -79,16 +79,16 @@ func TestParseLSCPUOutput(t *testing.T) {
 62,62,1,7
 63,63,1,7`
 
-	// 调用被测试的函数
+	// Call the function being tested
 	result := utils.ParseLSCPUOutput(testInput)
 
-	// 验证结果
+	// Verify the result
 	expectedLength := 64
 	if len(result) != expectedLength {
-		t.Errorf("期望的 CPUInfo 数量为 %d，实际得到 %d", expectedLength, len(result))
+		t.Errorf("Expected %d CPUInfo items, but got %d", expectedLength, len(result))
 	}
 
-	// 检查一些特定的值
+	// Check some specific values
 	expectedValues := []utils.CPUInfo{
 		{CPUID: 0, CoreID: 0, SocketID: 0, NumaNodeID: 0},
 		{CPUID: 7, CoreID: 7, SocketID: 0, NumaNodeID: 0},
@@ -100,12 +100,12 @@ func TestParseLSCPUOutput(t *testing.T) {
 
 	for _, expected := range expectedValues {
 		if !containsCPUInfo(result, expected) {
-			t.Errorf("未找到预期的 CPUInfo: %+v", expected)
+			t.Errorf("Expected CPUInfo not found: %+v", expected)
 		}
 	}
 }
 
-// 辅助函数：检查切片中是否包含特定的 CPUInfo
+// Helper function: check if a slice contains a specific CPUInfo
 func containsCPUInfo(slice []utils.CPUInfo, item utils.CPUInfo) bool {
 	for _, v := range slice {
 		if reflect.DeepEqual(v, item) {
