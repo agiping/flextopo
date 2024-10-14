@@ -1,6 +1,6 @@
 package graph
 
-// Edge 表示拓扑图中的一条边
+// Edge represents an edge in the FlexTopo graph
 type Edge struct {
 	Source *Node
 	Target *Node

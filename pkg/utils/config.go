@@ -5,18 +5,18 @@ import (
 	"strconv"
 )
 
-// Config 表示全局配置
+// Config is the global configuration
 type Config struct {
 	CoreGroupSize int
-	// 其他配置项
+	// other configurations
 }
 
 var config *Config
 
 func GetConfig() *Config {
 	if config == nil {
-		// 初始化配置
-		coreGroupSize := 8 // 默认值
+		// initialize config
+		coreGroupSize := 8 // default value
 		if val := os.Getenv("CORE_GROUP_SIZE"); val != "" {
 			if size, err := strconv.Atoi(val); err == nil && size > 0 {
 				coreGroupSize = size
