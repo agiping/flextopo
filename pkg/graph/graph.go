@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"encoding/json"
 	"flextopo/pkg/utils"
 	"fmt"
 	"sort"
@@ -57,13 +56,13 @@ func (g *FlexTopoGraph) BuildCPUNodes(cpuInfos []utils.CPUInfo) {
 		// Create or get Core Group node
 		coreGroupID := fmt.Sprintf("coregroup-%d-%d", cpuInfo.NumaNodeID, cpuInfo.CoreID/g.CoreGroupSize)
 		coreGroupNode := g.getNode(coreGroupID, "CoreGroup")
-		coreGroupNode.Attributes["nodeID"] = json.RawMessage(fmt.Sprintf("\"%d\"", cpuInfo.NumaNodeID))
-		coreGroupNode.Attributes["groupIndex"] = json.RawMessage(fmt.Sprintf("\"%d\"", cpuInfo.CoreID/g.CoreGroupSize))
+		coreGroupNode.Attributes["nodeID"] = fmt.Sprintf("%d", cpuInfo.NumaNodeID)
+		coreGroupNode.Attributes["groupIndex"] = fmt.Sprintf("%d", cpuInfo.CoreID/g.CoreGroupSize)
 		g.addEdge(numaNode, coreGroupNode, "contains")
 
 		// Create CPU Core node
 		coreNode := g.getNode(coreID, "CPUCore")
-		coreNode.Attributes["status"] = json.RawMessage("free")
+		coreNode.Attributes["status"] = "free"
 		g.addEdge(coreGroupNode, coreNode, "contains")
 	}
 }
@@ -74,11 +73,11 @@ func (g *FlexTopoGraph) NewGPUNode(index int, uuid, name string, memoryTotal int
 	gpuNode := &Node{
 		ID:   gpuID,
 		Type: "GPU",
-		Attributes: map[string]json.RawMessage{
-			"uuid":        json.RawMessage(uuid),
-			"name":        json.RawMessage(name),
-			"memoryTotal": json.RawMessage(fmt.Sprintf("\"%d\"", memoryTotal)),
-			"status":      json.RawMessage("free"),
+		Attributes: map[string]string{
+			"uuid":        uuid,
+			"name":        name,
+			"memoryTotal": fmt.Sprintf("%d", memoryTotal),
+			"status":      "free",
 		},
 	}
 	return gpuNode
@@ -94,8 +93,8 @@ func (g *FlexTopoGraph) UpdateCPUUsage(podName string, cpuCores []int) {
 	for _, coreID := range cpuCores {
 		nodeID := fmt.Sprintf("core-%d", coreID)
 		if node, exists := g.Nodes[nodeID]; exists {
-			node.Attributes["status"] = json.RawMessage("used")
-			node.Attributes["usedBy"] = json.RawMessage(podName)
+			node.Attributes["status"] = "used"
+			node.Attributes["usedBy"] = podName
 		}
 	}
 }
@@ -107,8 +106,8 @@ func (g *FlexTopoGraph) UpdateGPUUsage(podName string, gpuUUIDs []string) {
 		for _, node := range g.Nodes {
 			if node.Type == "GPU" {
 				if string(node.Attributes["uuid"]) == uuid {
-					node.Attributes["status"] = json.RawMessage("used")
-					node.Attributes["usedBy"] = json.RawMessage(podName)
+					node.Attributes["status"] = "used"
+					node.Attributes["usedBy"] = podName
 					break
 				}
 			}
@@ -170,7 +169,7 @@ func (g *FlexTopoGraph) getNode(id, nodeType string) *Node {
 	node := &Node{
 		ID:         id,
 		Type:       nodeType,
-		Attributes: make(map[string]json.RawMessage),
+		Attributes: make(map[string]string),
 		Children:   []*Node{},
 	}
 	g.Nodes[id] = node
