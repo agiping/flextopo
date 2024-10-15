@@ -2,10 +2,10 @@ package reporter
 
 import (
 	"context"
-	"flextopo/pkg/crd"
 	"flextopo/pkg/graph"
 	"flextopo/pkg/utils"
 
+	flextopov1alpha1 "github.com/agiping/flextopo-api/pkg/apis/flextopo/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -48,7 +48,7 @@ func (r *Reporter) Report(graph *graph.FlexTopoGraph) error {
 	spec := graph.ToSpec()
 
 	// Build CRD object
-	flextopo := &crd.FlexTopo{
+	flextopo := &flextopov1alpha1.FlexTopo{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "FlexTopo",
 			APIVersion: "flextopo.baichuan-inc.com/v1alpha1",

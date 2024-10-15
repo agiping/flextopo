@@ -114,6 +114,6 @@ func TestBuildCPUNodes(t *testing.T) {
 	// Verify CPUCore attributes
 	for i := 0; i < 64; i++ {
 		cpuCore := graph.getNode(fmt.Sprintf("core-%d", i), "CPUCore")
-		assert.Equal(t, "free", cpuCore.Attributes["status"], "The status of each CPU Core should be free")
+		assert.Equal(t, "free", string(cpuCore.Attributes["status"]), "The status of each CPU Core should be free")
 	}
 }
