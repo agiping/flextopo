@@ -59,6 +59,7 @@ func (r *Reporter) Report(graph *graph.FlexTopoGraph) error {
 		Spec: *spec,
 	}
 
+	r.logger.Info("FlexTopo object: " + utils.PrettyPrint(flextopo))
 	// Convert CRD object to unstructured.Unstructured
 	unstructuredData, err := runtime.DefaultUnstructuredConverter.ToUnstructured(flextopo)
 	if err != nil {
