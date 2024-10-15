@@ -57,8 +57,8 @@ func (g *FlexTopoGraph) BuildCPUNodes(cpuInfos []utils.CPUInfo) {
 		// Create or get Core Group node
 		coreGroupID := fmt.Sprintf("coregroup-%d-%d", cpuInfo.NumaNodeID, cpuInfo.CoreID/g.CoreGroupSize)
 		coreGroupNode := g.getNode(coreGroupID, "CoreGroup")
-		coreGroupNode.Attributes["nodeID"] = json.RawMessage(fmt.Sprintf("%d", cpuInfo.NumaNodeID))
-		coreGroupNode.Attributes["groupIndex"] = json.RawMessage(fmt.Sprintf("%d", cpuInfo.CoreID/g.CoreGroupSize))
+		coreGroupNode.Attributes["nodeID"] = json.RawMessage(fmt.Sprintf("\"%d\"", cpuInfo.NumaNodeID))
+		coreGroupNode.Attributes["groupIndex"] = json.RawMessage(fmt.Sprintf("\"%d\"", cpuInfo.CoreID/g.CoreGroupSize))
 		g.addEdge(numaNode, coreGroupNode, "contains")
 
 		// Create CPU Core node
@@ -77,7 +77,7 @@ func (g *FlexTopoGraph) NewGPUNode(index int, uuid, name string, memoryTotal int
 		Attributes: map[string]json.RawMessage{
 			"uuid":        json.RawMessage(uuid),
 			"name":        json.RawMessage(name),
-			"memoryTotal": json.RawMessage(fmt.Sprintf("%d", memoryTotal)),
+			"memoryTotal": json.RawMessage(fmt.Sprintf("\"%d\"", memoryTotal)),
 			"status":      json.RawMessage("free"),
 		},
 	}
