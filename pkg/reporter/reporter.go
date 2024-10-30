@@ -59,16 +59,18 @@ func (r *Reporter) Report(graph *graph.FlexTopoGraph) error {
 		Spec: *spec,
 	}
 
-	r.logger.Info("FlexTopo object: " + utils.PrettyPrint(flextopo))
+	// for debugging:
+	// r.logger.Info("FlexTopo object: " + utils.PrettyPrint(flextopo))
 	// Convert CRD object to unstructured.Unstructured
+
 	unstructuredData, err := runtime.DefaultUnstructuredConverter.ToUnstructured(flextopo)
 	if err != nil {
 		r.logger.Error("Failed to convert FlexTopo object to unstructured: " + err.Error())
 		return err
 	}
-	r.logger.Info("Successfully converted FlexTopo object to unstructured: " + utils.PrettyPrint(unstructuredData))
+	//r.logger.Info("Successfully converted FlexTopo object to unstructured: " + utils.PrettyPrint(unstructuredData))
 	unstructuredObj := &unstructured.Unstructured{Object: unstructuredData}
-	r.logger.Info("Unstructured object: " + utils.PrettyPrint(unstructuredObj.Object))
+	//r.logger.Info("Unstructured object: " + utils.PrettyPrint(unstructuredObj.Object))
 	// Try to get existing resource
 	existing, err := r.dynamicClient.Resource(gvr).Get(context.TODO(), r.nodeName, metav1.GetOptions{})
 	if err != nil {

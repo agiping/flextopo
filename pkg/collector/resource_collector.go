@@ -61,19 +61,18 @@ func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) err
 	return nil
 }
 
+// GetPodQoSClass gets the QoS class of a Pod
+func GetPodQoSClass(pod *corev1.Pod) corev1.PodQOSClass {
+	return pod.Status.QOSClass
+}
+
 // processPod processes a single Pod and updates the resource allocation status on the FlexTopo graph
 func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGraph) {
-	// filter out best-effort pods
-	hasCPURequest := false
-	for _, container := range pod.Spec.Containers {
-		if _, ok := container.Resources.Requests[corev1.ResourceCPU]; ok {
-			hasCPURequest = true
-			break
-		}
-	}
-
-	if !hasCPURequest {
-		rc.logger.Info("Skipping best-effort pod: " + pod.Name)
+	// filter out non-guaranteed pods
+	// TODO(Ping Zhang): revisit this logic when we have more QoS classes
+	qosClass := GetPodQoSClass(pod)
+	if qosClass != corev1.PodQOSGuaranteed {
+		rc.logger.Info("Skipping non-guaranteed pod: " + pod.Name)
 		return
 	}
 
