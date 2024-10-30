@@ -63,6 +63,20 @@ func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) err
 
 // processPod processes a single Pod and updates the resource allocation status on the FlexTopo graph
 func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGraph) {
+	// filter out best-effort pods
+	hasCPURequest := false
+	for _, container := range pod.Spec.Containers {
+		if _, ok := container.Resources.Requests[corev1.ResourceCPU]; ok {
+			hasCPURequest = true
+			break
+		}
+	}
+
+	if !hasCPURequest {
+		rc.logger.Info("Skipping best-effort pod: " + pod.Name)
+		return
+	}
+
 	// Get the process IDs of all containers in the Pod
 	for _, containerStatus := range pod.Status.ContainerStatuses {
 		containerID := containerStatus.ContainerID
@@ -91,12 +105,13 @@ func (rc *ResourceCollector) processPod(pod *corev1.Pod, graph *graph.FlexTopoGr
 			rc.logger.Warn("Failed to get CPU cores for container " + id + ": " + err.Error())
 			continue
 		}
+
 		// debugging:
 		// convert []int into []string
-		cpuCoresStr := make([]string, len(cpuCores))
-		for i, core := range cpuCores {
-			cpuCoresStr[i] = strconv.Itoa(core)
-		}
+		// cpuCoresStr := make([]string, len(cpuCores))
+		// for i, core := range cpuCores {
+		// 	cpuCoresStr[i] = strconv.Itoa(core)
+		// }
 		// rc.logger.Info("====CPU cores of container " + id + ": " + strings.Join(cpuCoresStr, ", "))
 
 		// Update the status of corresponding CPU Core nodes in the topology graph
