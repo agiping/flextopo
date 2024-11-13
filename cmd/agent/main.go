@@ -6,6 +6,7 @@ import (
 	"flextopo/pkg/reporter"
 	"flextopo/pkg/utils"
 	"os"
+	"sync"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -42,39 +43,52 @@ func main() {
 			continue
 		}
 
-		// 对每个节点进行收集和上报
+		// 使用 WaitGroup 等待所有协程完成
+		var wg sync.WaitGroup
+		// 限制并发数量为10个协程
+		semaphore := make(chan struct{}, 10)
+
+		// 对每个节点启动一个协程进行处理
 		for _, node := range nodes.Items {
-			nodeName := node.Name
+			wg.Add(1)
+			semaphore <- struct{}{} // 获取信号量
 
-			collector, err := collector.NewCollector(nodeName, logger)
-			if err != nil {
-				logger.Error("Failed to create collector for node " + nodeName + ": " + err.Error())
-				continue
-			}
+			go func(nodeName string) {
+				defer wg.Done()
+				defer func() { <-semaphore }() // 释放信号量
 
-			reporter, err := reporter.NewReporter(nodeName, logger)
-			if err != nil {
-				logger.Error("Failed to create reporter for node " + nodeName + ": " + err.Error())
-				continue
-			}
+				collector, err := collector.NewCollector(nodeName, logger)
+				if err != nil {
+					logger.Error("Failed to create collector for node " + nodeName + ": " + err.Error())
+					return
+				}
 
-			logger.Info("Collecting topology data for node: " + nodeName)
-			graph, err := collector.Collect()
-			if err != nil {
-				logger.Error("Failed to collect topology data for node " + nodeName + ": " + err.Error())
-				continue
-			}
+				reporter, err := reporter.NewReporter(nodeName, logger)
+				if err != nil {
+					logger.Error("Failed to create reporter for node " + nodeName + ": " + err.Error())
+					return
+				}
 
-			logger.Info("Reporting topology data for node: " + nodeName)
-			err = reporter.Report(graph)
-			if err != nil {
-				logger.Error("Failed to report topology data for node " + nodeName + ": " + err.Error())
-				continue
-			}
+				logger.Info("Collecting topology data for node: " + nodeName)
+				graph, err := collector.Collect()
+				if err != nil {
+					logger.Error("Failed to collect topology data for node " + nodeName + ": " + err.Error())
+					return
+				}
 
-			logger.Info("Successfully reported topology data for node " + nodeName)
+				logger.Info("Reporting topology data for node: " + nodeName)
+				err = reporter.Report(graph)
+				if err != nil {
+					logger.Error("Failed to report topology data for node " + nodeName + ": " + err.Error())
+					return
+				}
+
+				logger.Info("Successfully reported topology data for node " + nodeName)
+			}(node.Name)
 		}
 
+		// 等待所有协程完成
+		wg.Wait()
 		<-ticker.C
 	}
 }

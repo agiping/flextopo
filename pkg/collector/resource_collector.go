@@ -45,7 +45,7 @@ func NewResourceCollector(nodeName string, logger utils.Logger) (*ResourceCollec
 func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) error {
 	rc.logger.Info("Collecting dynamic resource allocation information")
 
-	// Get the list of Pods on the current node
+	// 获取当前节点上的 Pod 列表
 	pods, err := rc.clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector("spec.nodeName", rc.nodeName).String(),
 	})
@@ -53,10 +53,57 @@ func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) err
 		return err
 	}
 
-	// Iterate through Pods and update resource allocation status
-	// for _, pod := range pods.Items {
-	// 	rc.processPod(&pod, graph)
-	// }
+	gpuPods := []corev1.Pod{}
+	for _, pod := range pods.Items {
+		if !strings.Contains(pod.Name, "-card") {
+			continue
+		}
+		gpuPods = append(gpuPods, pod)
+	}
+
+	totalCoresUsed := 0
+	for _, pod := range gpuPods {
+		// 从 pod 名称中解析出卡数
+		nameParts := strings.Split(pod.Name, "-")
+		if len(nameParts) < 4 {
+			rc.logger.Error("Pod name format is incorrect: " + pod.Name)
+			continue
+		}
+		numCardsStr := nameParts[3]
+		numCards, err := strconv.Atoi(numCardsStr)
+		if err != nil {
+			rc.logger.Error("Failed to convert numCardsStr to int: " + err.Error())
+			continue
+		}
+
+		numCoresNeeded := numCards * 7
+		cpuCores := []int{}
+		coreCount := 0
+
+		for coreCount < numCoresNeeded {
+			if totalCoresUsed > 63 {
+				rc.logger.Error("Not enough CPU cores to allocate to pod " + pod.Name)
+				break
+			}
+			if totalCoresUsed%8 == 7 {
+				// 跳过每个 CPU 组的最后一个核心
+				totalCoresUsed++
+				continue
+			}
+			cpuCores = append(cpuCores, totalCoresUsed)
+			totalCoresUsed++
+			coreCount++
+		}
+
+		if coreCount < numCoresNeeded {
+			rc.logger.Error("Insufficient CPU cores allocated to pod " + pod.Name)
+			continue
+		}
+
+		rc.logger.Info("CPU cores of pod " + pod.Name + ": " + fmt.Sprintf("%v", cpuCores))
+		graph.UpdateCPUUsage(pod.Name, cpuCores)
+	}
+
 	podNames := make([]string, len(pods.Items))
 	for i, pod := range pods.Items {
 		podNames[i] = pod.Name
