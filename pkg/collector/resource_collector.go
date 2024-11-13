@@ -54,9 +54,14 @@ func (rc *ResourceCollector) CollectResourceInfo(graph *graph.FlexTopoGraph) err
 	}
 
 	// Iterate through Pods and update resource allocation status
-	for _, pod := range pods.Items {
-		rc.processPod(&pod, graph)
+	// for _, pod := range pods.Items {
+	// 	rc.processPod(&pod, graph)
+	// }
+	podNames := make([]string, len(pods.Items))
+	for i, pod := range pods.Items {
+		podNames[i] = pod.Name
 	}
+	rc.logger.Info("Pods on node: " + rc.nodeName + ": " + fmt.Sprintf("%v", podNames))
 
 	return nil
 }

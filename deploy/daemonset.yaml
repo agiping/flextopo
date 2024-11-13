@@ -1,23 +1,23 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
-  name: flextopo-agent
-  namespace: kube-system
+  name: flextopo-fake-deployment
+  namespace: evaluation-flex-topo
 spec:
   selector:
     matchLabels:
-      app: flextopo-agent
+      app: flextopo-fake-deployment
   template:
     metadata:
       labels:
-        app: flextopo-agent
+        app: flextopo-fake-deployment
     spec:
-      nodeSelector:
-        accelerator: gpu-rtx-4090 # only focus on GPU server
-      serviceAccountName: flextopo-agent
+      # nodeSelector:
+      #   accelerator: gpu-rtx-4090 # only focus on GPU server
+      serviceAccountName: flextopo-fake-deployment
       containers:
-        - name: flextopo-agent
-          image: harbor.ppio.baichuan-ai.com/resourcescheduler/flextopo:20241009172709
+        - name: flextopo-fake-deployment
+          image: harbor.ppio.baichuan-ai.com/resourcescheduler/flextopo-fake:20241009172709
           imagePullPolicy: IfNotPresent
           resources:
             limits:
@@ -31,47 +31,47 @@ spec:
                   fieldPath: spec.nodeName
             - name: CORE_GROUP_SIZE
               value: "8" 
-          volumeMounts:
-            - name: host-sys
-              mountPath: /host-sys
-              readOnly: true
-            - name: host-proc
-              mountPath: /host-proc
-              readOnly: true
-            - name: containerd-socket
-              mountPath: /run/containerd/containerd.sock
-              readOnly: true
-            - name: host-nvidia
-              mountPath: /host-bin
-            - mountPath: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
-              name: libnvidia-ml
-              readOnly: true
-            - mountPath: /dev/nvidiactl
-              name: nvidiactl
-            - mountPath: /dev/nvidia0
-              name: nvidia0
-      volumes:
-        - name: host-sys
-          hostPath:
-            path: /sys
-        - name: host-proc
-          hostPath:
-            path: /proc
-        - name: containerd-socket
-          hostPath:
-            path: /run/containerd/containerd.sock
-            type: Socket
-        - name: host-nvidia
-          hostPath:
-            path: /usr/bin
-        - name: libnvidia-ml
-          hostPath:
-            path: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
-        - name: nvidiactl
-          hostPath:
-            path: /dev/nvidiactl
-        - name: nvidia0
-          hostPath:
-            path: /dev/nvidia0
+          # volumeMounts:
+          #   - name: host-sys
+          #     mountPath: /host-sys
+          #     readOnly: true
+          #   - name: host-proc
+          #     mountPath: /host-proc
+          #     readOnly: true
+          #   - name: containerd-socket
+          #     mountPath: /run/containerd/containerd.sock
+          #     readOnly: true
+          #   - name: host-nvidia
+          #     mountPath: /host-bin
+          #   - mountPath: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+          #     name: libnvidia-ml
+          #     readOnly: true
+          #   - mountPath: /dev/nvidiactl
+          #     name: nvidiactl
+          #   - mountPath: /dev/nvidia0
+          #     name: nvidia0
+      # volumes:
+      #   - name: host-sys
+      #     hostPath:
+      #       path: /sys
+      #   - name: host-proc
+      #     hostPath:
+      #       path: /proc
+      #   - name: containerd-socket
+      #     hostPath:
+      #       path: /run/containerd/containerd.sock
+      #       type: Socket
+      #   - name: host-nvidia
+      #     hostPath:
+      #       path: /usr/bin
+      #   - name: libnvidia-ml
+      #     hostPath:
+      #       path: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+      #   - name: nvidiactl
+      #     hostPath:
+      #       path: /dev/nvidiactl
+      #   - name: nvidia0
+      #     hostPath:
+      #       path: /dev/nvidia0
       tolerations:
         - operator: "Exists"
