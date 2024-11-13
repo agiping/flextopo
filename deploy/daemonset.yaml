@@ -4,6 +4,7 @@ metadata:
   name: flextopo-fake-deployment
   namespace: evaluation-flex-topo
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: flextopo-fake-deployment
